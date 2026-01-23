@@ -1,4 +1,4 @@
-import { Bell, Menu, Moon, Search, Sun } from 'lucide-react'
+import { Bell, Menu, Moon, Sun } from 'lucide-react'
 import { useThemeStore } from '../store/theme'
 
 const Topbar = () => {
@@ -14,16 +14,7 @@ const Topbar = () => {
           <Menu size={18} />
         </button>
 
-        <div className="flex-1 flex items-center gap-3">
-          <div className="hidden sm:flex items-center gap-2 rounded-xl bg-surface border border-border px-3 py-2 w-full max-w-lg">
-            <Search size={18} className="text-text-secondary" />
-            <input
-              type="search"
-              placeholder="Buscar rutinas, suplementos o gimnasios"
-              className="w-full bg-transparent text-sm outline-none text-text placeholder:text-text-secondary"
-            />
-          </div>
-        </div>
+        <div className="flex-1" />
 
         <div className="flex items-center gap-2">
           <button
