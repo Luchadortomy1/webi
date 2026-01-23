@@ -1,33 +1,69 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
+import { BarChart3, Building2, CreditCard, Layers, Settings, Ticket, Users, Waypoints } from 'lucide-react'
 import AdminLayout from './layouts/AdminLayout'
 import Admin from './pages/Admin'
 import AdminUsers from './pages/AdminUsers'
-import AdminProducts from './pages/AdminProducts'
 import AdminGyms from './pages/AdminGyms'
 import AdminPayments from './pages/AdminPayments'
 import AdminPlans from './pages/AdminPlans'
-import AdminCodes from './pages/AdminCodes'
-import AdminOrders from './pages/AdminOrders'
 import AdminSubscriptions from './pages/AdminSubscriptions'
 import AdminSettings from './pages/AdminSettings'
+import GymPortal from './pages/GymPortal'
+import Login from './pages/Login'
+import RequireAuth from './components/RequireAuth'
+import type { AdminNavItem } from './components/AdminSidebar'
 
 const App = () => {
+  const gymAdminNav: AdminNavItem[] = [
+    { label: 'Portal', to: '', icon: Building2 },
+    { label: 'Suscripciones', to: 'subscriptions', icon: Ticket },
+  ]
+
+  const superAdminNav: AdminNavItem[] = [
+    { label: 'Overview', to: '', icon: BarChart3 },
+    { label: 'Usuarios', to: 'users', icon: Users },
+    { label: 'Gimnasios', to: 'gyms', icon: Layers },
+    { label: 'Planes', to: 'plans', icon: Waypoints },
+    { label: 'Suscripciones', to: 'subscriptions', icon: Ticket },
+    { label: 'Pagos', to: 'payments', icon: CreditCard },
+    { label: 'Ajustes', to: 'settings', icon: Settings },
+  ]
+
   return (
     <Routes>
-      <Route path="/" element={<AdminLayout />}>
+      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route path="/login" element={<Login />} />
+
+      <Route
+        path="/sa"
+        element={
+          <RequireAuth allowedRoles={['superadmin']}>
+            <AdminLayout prefix="/sa" navItems={superAdminNav} />
+          </RequireAuth>
+        }
+      >
         <Route index element={<Admin />} />
         <Route path="users" element={<AdminUsers />} />
         <Route path="gyms" element={<AdminGyms />} />
         <Route path="plans" element={<AdminPlans />} />
-        <Route path="codes" element={<AdminCodes />} />
-        <Route path="products" element={<AdminProducts />} />
-        <Route path="orders" element={<AdminOrders />} />
         <Route path="subscriptions" element={<AdminSubscriptions />} />
         <Route path="payments" element={<AdminPayments />} />
         <Route path="settings" element={<AdminSettings />} />
       </Route>
 
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route
+        path="/admin"
+        element={
+          <RequireAuth allowedRoles={['admin', 'superadmin']}>
+            <AdminLayout prefix="/admin" navItems={gymAdminNav} />
+          </RequireAuth>
+        }
+      >
+        <Route index element={<GymPortal />} />
+        <Route path="subscriptions" element={<AdminSubscriptions />} />
+      </Route>
+
+      <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   )
 }

@@ -1,8 +1,10 @@
-import { Download, Moon, Search, ShieldAlert, Sun } from 'lucide-react'
+import { Download, LogOut, Moon, Search, ShieldAlert, Sun } from 'lucide-react'
 import { useThemeStore } from '../store/theme'
+import { useAuth } from '../providers/AuthProvider'
 
 const AdminTopbar = () => {
   const { theme, toggleTheme } = useThemeStore()
+  const { signOut } = useAuth()
 
   return (
     <header className="sticky top-0 z-30 bg-surface/90 backdrop-blur border-b border-border">
@@ -22,6 +24,12 @@ const AdminTopbar = () => {
           </button>
           <button className="h-10 px-3 inline-flex items-center gap-2 rounded-xl bg-primary text-background text-sm font-semibold">
             <Download size={16} /> Exportar CSV
+          </button>
+          <button
+            onClick={signOut}
+            className="h-10 px-3 inline-flex items-center gap-2 rounded-xl border border-border text-sm font-semibold text-text"
+          >
+            <LogOut size={16} /> Cerrar sesión
           </button>
           <button
             onClick={toggleTheme}
