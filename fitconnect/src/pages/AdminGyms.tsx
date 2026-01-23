@@ -13,6 +13,7 @@ const AdminGyms = () => {
         <p className="text-sm text-text-secondary">Gimnasios</p>
         <h1 className="text-2xl font-bold">Contratos y suscripciones</h1>
       </div>
+
       <Card>
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
           {gyms.map((gym) => (

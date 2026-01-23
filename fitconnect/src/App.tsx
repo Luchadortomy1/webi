@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { BarChart3, Building2, CreditCard, Layers, Settings, Ticket, Users, Waypoints } from 'lucide-react'
 import AdminLayout from './layouts/AdminLayout'
+import Login from './pages/Login'
 import Admin from './pages/Admin'
 import AdminUsers from './pages/AdminUsers'
 import AdminGyms from './pages/AdminGyms'
@@ -31,6 +32,7 @@ const App = () => {
 
   return (
     <Routes>
+<<<<<<< HEAD
       <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="/login" element={<Login />} />
 
@@ -42,6 +44,11 @@ const App = () => {
           </RequireAuth>
         }
       >
+=======
+      <Route path="/" element={<Login />} />
+
+      <Route path="/admin" element={<AdminLayout />}>
+>>>>>>> 26ad93db39ab1f03a3fdfd36f05c9e73407c0604
         <Route index element={<Admin />} />
         <Route path="users" element={<AdminUsers />} />
         <Route path="gyms" element={<AdminGyms />} />

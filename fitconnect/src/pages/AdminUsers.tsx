@@ -13,6 +13,7 @@ const AdminUsers = () => {
         <p className="text-sm text-text-secondary">Usuarios</p>
         <h1 className="text-2xl font-bold">Gestión, riesgos y soporte</h1>
       </div>
+
       <Card subtitle="Alta, baja lógica, lectura, modificación (según SRS)">
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
