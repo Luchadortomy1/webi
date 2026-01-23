@@ -1,25 +1,34 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
-import AppLayout from './layouts/AppLayout'
-import Dashboard from './pages/Dashboard'
-import Routines from './pages/Routines'
-import Store from './pages/Store'
-import Gyms from './pages/Gyms'
-import Profile from './pages/Profile'
+import AdminLayout from './layouts/AdminLayout'
 import Admin from './pages/Admin'
+import AdminUsers from './pages/AdminUsers'
+import AdminProducts from './pages/AdminProducts'
+import AdminGyms from './pages/AdminGyms'
+import AdminPayments from './pages/AdminPayments'
+import AdminPlans from './pages/AdminPlans'
+import AdminCodes from './pages/AdminCodes'
+import AdminOrders from './pages/AdminOrders'
+import AdminSubscriptions from './pages/AdminSubscriptions'
+import AdminSettings from './pages/AdminSettings'
 
 const App = () => {
   return (
-    <AppLayout>
-      <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/routines" element={<Routines />} />
-        <Route path="/store" element={<Store />} />
-        <Route path="/gyms" element={<Gyms />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/admin" element={<Admin />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </AppLayout>
+    <Routes>
+      <Route path="/" element={<AdminLayout />}>
+        <Route index element={<Admin />} />
+        <Route path="users" element={<AdminUsers />} />
+        <Route path="gyms" element={<AdminGyms />} />
+        <Route path="plans" element={<AdminPlans />} />
+        <Route path="codes" element={<AdminCodes />} />
+        <Route path="products" element={<AdminProducts />} />
+        <Route path="orders" element={<AdminOrders />} />
+        <Route path="subscriptions" element={<AdminSubscriptions />} />
+        <Route path="payments" element={<AdminPayments />} />
+        <Route path="settings" element={<AdminSettings />} />
+      </Route>
+
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   )
 }
 

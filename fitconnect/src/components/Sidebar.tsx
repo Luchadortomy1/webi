@@ -1,4 +1,4 @@
-import { Dumbbell, Home, MapPin, Settings, ShoppingBag, User } from 'lucide-react'
+import { Dumbbell, Home, MapPin, ShoppingBag, User } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
 
 const navItems = [
@@ -7,7 +7,6 @@ const navItems = [
   { label: 'Tienda', to: '/store', icon: ShoppingBag },
   { label: 'Gimnasios', to: '/gyms', icon: MapPin },
   { label: 'Perfil', to: '/profile', icon: User },
-  { label: 'Admin', to: '/admin', icon: Settings },
 ]
 
 const Sidebar = () => {
