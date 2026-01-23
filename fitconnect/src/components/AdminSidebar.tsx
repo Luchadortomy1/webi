@@ -47,13 +47,6 @@ const AdminSidebar = () => {
         ))}
       </nav>
 
-      <div className="mt-auto rounded-2xl border border-border bg-gradient-to-br from-error/10 via-surface to-surface p-4 text-sm">
-        <p className="font-semibold text-text mb-2">Centro de riesgos</p>
-        <p className="text-text-secondary mb-3">Casos de fraude, disputas y verificaciones pendientes.</p>
-        <button className="w-full rounded-xl bg-error px-3 py-2 text-sm font-semibold text-background hover:opacity-90 transition-opacity">
-          Revisar alertas
-        </button>
-      </div>
     </aside>
   )
 }
