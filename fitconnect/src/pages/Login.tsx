@@ -1,32 +1,71 @@
 import { FormEvent, useState } from 'react'
 import { ArrowRight, Lock, Mail, ShieldCheck, Sparkles, UserPlus } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { supabase } from '../lib/supabase'
 
 const Login = () => {
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [remember, setRemember] = useState(true)
+  const [loginError, setLoginError] = useState('')
+  const [loginLoading, setLoginLoading] = useState(false)
   const [regName, setRegName] = useState('')
   const [regEmail, setRegEmail] = useState('')
   const [regPassword, setRegPassword] = useState('')
   const [regConfirm, setRegConfirm] = useState('')
   const [regError, setRegError] = useState('')
+  const [regLoading, setRegLoading] = useState(false)
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    // Placeholder auth: direct access to admin. Replace with real auth when backend is ready.
+    setLoginError('')
+    setLoginLoading(true)
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
+
+    setLoginLoading(false)
+
+    if (error) {
+      setLoginError(error.message)
+      return
+    }
+
     navigate('/admin')
   }
 
-  const handleRegister = (event: FormEvent<HTMLFormElement>) => {
+  const handleRegister = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     if (regPassword !== regConfirm) {
       setRegError('Las contraseñas no coinciden')
       return
     }
     setRegError('')
-    // Placeholder: create superadmin. Replace with backend call.
+    setRegLoading(true)
+
+    const { error } = await supabase.auth.signUp({
+      email: regEmail,
+      password: regPassword,
+      options: {
+        data: {
+          role: 'admin',
+          name: regName,
+        },
+        // Persist session; align with “recuérdame” toggle
+        emailRedirectTo: undefined,
+      },
+    })
+
+    setRegLoading(false)
+
+    if (error) {
+      setRegError(error.message)
+      return
+    }
+
     navigate('/admin')
   }
 
@@ -130,11 +169,14 @@ const Login = () => {
               </button>
             </div>
 
+            {loginError && <p className="text-sm font-semibold text-[#ffb3a5]">{loginError}</p>}
+
             <button
               type="submit"
-              className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-2xl bg-gradient-to-r from-[#e24553] via-[#ff5f5f] to-[#ff8f7d] px-4 py-3 text-sm font-semibold text-background shadow-soft transition-transform duration-150 hover:-translate-y-0.5"
+              disabled={loginLoading}
+              className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-2xl bg-gradient-to-r from-[#e24553] via-[#ff5f5f] to-[#ff8f7d] px-4 py-3 text-sm font-semibold text-background shadow-soft transition-transform duration-150 hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              Entrar al panel
+              {loginLoading ? 'Entrando…' : 'Entrar al panel'}
               <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
             </button>
 
@@ -145,7 +187,7 @@ const Login = () => {
 
           <div className="flex items-center gap-2 text-sm font-semibold text-white/80">
             <UserPlus size={18} className="text-[#ff8f7d]" />
-            Crear superadmin
+            Crear admin
           </div>
 
           <form className="space-y-3" onSubmit={handleRegister}>
@@ -173,7 +215,7 @@ const Login = () => {
                     value={regEmail}
                     onChange={(event) => setRegEmail(event.target.value)}
                     required
-                    placeholder="superadmin@fitconnect.com"
+                    placeholder="admin@fitconnect.com"
                     className="w-full bg-transparent text-white placeholder:text-white/40 outline-none"
                   />
                 </div>
@@ -218,9 +260,10 @@ const Login = () => {
 
             <button
               type="submit"
-              className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-2xl border border-white/20 bg-white/10 px-4 py-3 text-sm font-semibold text-white transition-transform duration-150 hover:-translate-y-0.5"
+              disabled={regLoading}
+              className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-2xl border border-white/20 bg-white/10 px-4 py-3 text-sm font-semibold text-white transition-transform duration-150 hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              Registrar superadmin
+              {regLoading ? 'Registrando…' : 'Registrar admin'}
               <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
             </button>
             <p className="text-center text-xs text-white/60">Solo para creación inicial de cuentas de alto privilegio.</p>
