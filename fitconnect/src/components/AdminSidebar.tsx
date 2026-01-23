@@ -2,7 +2,6 @@ import type { ComponentType } from 'react'
 import { BarChart3, Building2, CreditCard, KeyRound, Layers, Settings, ShoppingBasket, Ticket, Users, Waypoints, Workflow } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
 
-<<<<<<< HEAD
 export type AdminNavItem = { label: string; to: string; icon: ComponentType<{ size?: number }> }
 
 const adminNav: AdminNavItem[] = [
@@ -17,19 +16,6 @@ const adminNav: AdminNavItem[] = [
   { label: 'Suscripciones', to: 'subscriptions', icon: Ticket },
   { label: 'Pagos', to: 'payments', icon: CreditCard },
   { label: 'Ajustes', to: 'settings', icon: Settings },
-=======
-const adminNav = [
-  { label: 'Overview', to: '/admin', icon: BarChart3 },
-  { label: 'Usuarios', to: '/admin/users', icon: Users },
-  { label: 'Gimnasios', to: '/admin/gyms', icon: Layers },
-  { label: 'Planes', to: '/admin/plans', icon: Waypoints },
-  { label: 'Códigos', to: '/admin/codes', icon: KeyRound },
-  { label: 'Productos', to: '/admin/products', icon: ShoppingBasket },
-  { label: 'Pedidos', to: '/admin/orders', icon: Workflow },
-  { label: 'Suscripciones', to: '/admin/subscriptions', icon: Ticket },
-  { label: 'Pagos', to: '/admin/payments', icon: CreditCard },
-  { label: 'Ajustes', to: '/admin/settings', icon: Settings },
->>>>>>> 26ad93db39ab1f03a3fdfd36f05c9e73407c0604
 ]
 
 interface AdminSidebarProps {
@@ -75,18 +61,13 @@ const AdminSidebar = ({ items = adminNav, prefix = '' }: AdminSidebarProps) => {
                   : 'text-text-secondary hover:text-text hover:border-border'
               }`
             }
-<<<<<<< HEAD
             end={to === ''}
-=======
-            end={to === '/admin'}
->>>>>>> 26ad93db39ab1f03a3fdfd36f05c9e73407c0604
           >
             <Icon size={18} />
             <span>{label}</span>
           </NavLink>
         ))}
       </nav>
-
     </aside>
   )
 }

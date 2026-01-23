@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-import { Download, LogOut, Moon, Search, ShieldAlert, Sun } from 'lucide-react'
-=======
-import { Download, Moon, Sun } from 'lucide-react'
->>>>>>> 26ad93db39ab1f03a3fdfd36f05c9e73407c0604
+import { Download, LogOut, Moon, Sun } from 'lucide-react'
 import { useThemeStore } from '../store/theme'
 import { useAuth } from '../providers/AuthProvider'
 
@@ -17,22 +13,12 @@ const AdminTopbar = () => {
           <button className="h-10 px-3 inline-flex items-center gap-2 rounded-xl bg-primary text-background text-sm font-semibold">
             <Download size={16} /> Exportar CSV
           </button>
-<<<<<<< HEAD
           <button
             onClick={signOut}
             className="h-10 px-3 inline-flex items-center gap-2 rounded-xl border border-border text-sm font-semibold text-text"
           >
             <LogOut size={16} /> Cerrar sesión
           </button>
-          <button
-            onClick={toggleTheme}
-            className="h-10 w-10 flex items-center justify-center rounded-xl border border-border bg-background"
-            aria-label="Cambiar tema"
-          >
-            {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
-          </button>
-=======
->>>>>>> 26ad93db39ab1f03a3fdfd36f05c9e73407c0604
         </div>
 
         <button

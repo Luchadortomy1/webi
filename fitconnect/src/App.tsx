@@ -10,7 +10,6 @@ import AdminPlans from './pages/AdminPlans'
 import AdminSubscriptions from './pages/AdminSubscriptions'
 import AdminSettings from './pages/AdminSettings'
 import GymPortal from './pages/GymPortal'
-import Login from './pages/Login'
 import RequireAuth from './components/RequireAuth'
 import type { AdminNavItem } from './components/AdminSidebar'
 
@@ -32,7 +31,6 @@ const App = () => {
 
   return (
     <Routes>
-<<<<<<< HEAD
       <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="/login" element={<Login />} />
 
@@ -44,11 +42,6 @@ const App = () => {
           </RequireAuth>
         }
       >
-=======
-      <Route path="/" element={<Login />} />
-
-      <Route path="/admin" element={<AdminLayout />}>
->>>>>>> 26ad93db39ab1f03a3fdfd36f05c9e73407c0604
         <Route index element={<Admin />} />
         <Route path="users" element={<AdminUsers />} />
         <Route path="gyms" element={<AdminGyms />} />
