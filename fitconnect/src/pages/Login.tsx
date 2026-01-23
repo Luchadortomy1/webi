@@ -1,5 +1,5 @@
 import { FormEvent, useState } from 'react'
-import { ArrowRight, Lock, Mail, ShieldCheck, Sparkles } from 'lucide-react'
+import { ArrowRight, Lock, Mail, ShieldCheck, Sparkles, UserPlus } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
 const Login = () => {
@@ -7,10 +7,26 @@ const Login = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [remember, setRemember] = useState(true)
+  const [regName, setRegName] = useState('')
+  const [regEmail, setRegEmail] = useState('')
+  const [regPassword, setRegPassword] = useState('')
+  const [regConfirm, setRegConfirm] = useState('')
+  const [regError, setRegError] = useState('')
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     // Placeholder auth: direct access to admin. Replace with real auth when backend is ready.
+    navigate('/admin')
+  }
+
+  const handleRegister = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    if (regPassword !== regConfirm) {
+      setRegError('Las contraseñas no coinciden')
+      return
+    }
+    setRegError('')
+    // Placeholder: create superadmin. Replace with backend call.
     navigate('/admin')
   }
 
@@ -55,7 +71,7 @@ const Login = () => {
           </div>
         </div>
 
-        <div className="w-full max-w-md rounded-3xl border border-white/10 bg-white/10 p-8 shadow-2xl backdrop-blur">
+        <div className="w-full max-w-md rounded-3xl border border-white/10 bg-white/10 p-8 shadow-2xl backdrop-blur space-y-6">
           <div className="mb-6 flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#e24553]/25 text-[#ff8f7d]">
               <Sparkles size={22} />
@@ -123,6 +139,91 @@ const Login = () => {
             </button>
 
             <p className="text-center text-xs text-white/60">Acceso restringido al equipo de operaciones de FitConnect.</p>
+          </form>
+
+          <div className="h-px bg-white/10" />
+
+          <div className="flex items-center gap-2 text-sm font-semibold text-white/80">
+            <UserPlus size={18} className="text-[#ff8f7d]" />
+            Crear superadmin
+          </div>
+
+          <form className="space-y-3" onSubmit={handleRegister}>
+            <div className="grid gap-3">
+              <label className="space-y-2 text-sm font-semibold text-white/80" htmlFor="reg-name">
+                Nombre completo
+                <input
+                  id="reg-name"
+                  type="text"
+                  value={regName}
+                  onChange={(event) => setRegName(event.target.value)}
+                  required
+                  placeholder="Ana Operaciones"
+                  className="w-full rounded-2xl border border-white/15 bg-white/5 px-3 py-2.5 text-white placeholder:text-white/40 outline-none focus:border-[#ff745c]/60 focus:bg-white/10"
+                />
+              </label>
+
+              <label className="space-y-2 text-sm font-semibold text-white/80" htmlFor="reg-email">
+                Correo corporativo
+                <div className="flex items-center gap-2 rounded-2xl border border-white/15 bg-white/5 px-3 py-2.5 focus-within:border-[#ff745c]/60 focus-within:bg-white/10">
+                  <Mail size={18} className="text-white/60" />
+                  <input
+                    id="reg-email"
+                    type="email"
+                    value={regEmail}
+                    onChange={(event) => setRegEmail(event.target.value)}
+                    required
+                    placeholder="superadmin@fitconnect.com"
+                    className="w-full bg-transparent text-white placeholder:text-white/40 outline-none"
+                  />
+                </div>
+              </label>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <label className="space-y-2 text-sm font-semibold text-white/80" htmlFor="reg-password">
+                  Contraseña
+                  <div className="flex items-center gap-2 rounded-2xl border border-white/15 bg-white/5 px-3 py-2.5 focus-within:border-[#ff745c]/60 focus-within:bg-white/10">
+                    <Lock size={18} className="text-white/60" />
+                    <input
+                      id="reg-password"
+                      type="password"
+                      value={regPassword}
+                      onChange={(event) => setRegPassword(event.target.value)}
+                      required
+                      placeholder="••••••••"
+                      className="w-full bg-transparent text-white placeholder:text-white/40 outline-none"
+                    />
+                  </div>
+                </label>
+
+                <label className="space-y-2 text-sm font-semibold text-white/80" htmlFor="reg-confirm">
+                  Confirmar contraseña
+                  <div className="flex items-center gap-2 rounded-2xl border border-white/15 bg-white/5 px-3 py-2.5 focus-within:border-[#ff745c]/60 focus-within:bg-white/10">
+                    <Lock size={18} className="text-white/60" />
+                    <input
+                      id="reg-confirm"
+                      type="password"
+                      value={regConfirm}
+                      onChange={(event) => setRegConfirm(event.target.value)}
+                      required
+                      placeholder="••••••••"
+                      className="w-full bg-transparent text-white placeholder:text-white/40 outline-none"
+                    />
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            {regError && <p className="text-sm font-semibold text-[#ffb3a5]">{regError}</p>}
+
+            <button
+              type="submit"
+              className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-2xl border border-white/20 bg-white/10 px-4 py-3 text-sm font-semibold text-white transition-transform duration-150 hover:-translate-y-0.5"
+            >
+              Registrar superadmin
+              <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
+            </button>
+            <p className="text-center text-xs text-white/60">Solo para creación inicial de cuentas de alto privilegio.</p>
           </form>
         </div>
       </div>
