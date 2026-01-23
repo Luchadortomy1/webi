@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import AdminLayout from './layouts/AdminLayout'
+import Login from './pages/Login'
 import Admin from './pages/Admin'
 import AdminUsers from './pages/AdminUsers'
 import AdminProducts from './pages/AdminProducts'
@@ -14,7 +15,9 @@ import AdminSettings from './pages/AdminSettings'
 const App = () => {
   return (
     <Routes>
-      <Route path="/" element={<AdminLayout />}>
+      <Route path="/" element={<Login />} />
+
+      <Route path="/admin" element={<AdminLayout />}>
         <Route index element={<Admin />} />
         <Route path="users" element={<AdminUsers />} />
         <Route path="gyms" element={<AdminGyms />} />

@@ -2,16 +2,16 @@ import { BarChart3, CreditCard, KeyRound, Layers, Settings, ShoppingBasket, Tick
 import { NavLink } from 'react-router-dom'
 
 const adminNav = [
-  { label: 'Overview', to: '/', icon: BarChart3 },
-  { label: 'Usuarios', to: '/users', icon: Users },
-  { label: 'Gimnasios', to: '/gyms', icon: Layers },
-  { label: 'Planes', to: '/plans', icon: Waypoints },
-  { label: 'Códigos', to: '/codes', icon: KeyRound },
-  { label: 'Productos', to: '/products', icon: ShoppingBasket },
-  { label: 'Pedidos', to: '/orders', icon: Workflow },
-  { label: 'Suscripciones', to: '/subscriptions', icon: Ticket },
-  { label: 'Pagos', to: '/payments', icon: CreditCard },
-  { label: 'Ajustes', to: '/settings', icon: Settings },
+  { label: 'Overview', to: '/admin', icon: BarChart3 },
+  { label: 'Usuarios', to: '/admin/users', icon: Users },
+  { label: 'Gimnasios', to: '/admin/gyms', icon: Layers },
+  { label: 'Planes', to: '/admin/plans', icon: Waypoints },
+  { label: 'Códigos', to: '/admin/codes', icon: KeyRound },
+  { label: 'Productos', to: '/admin/products', icon: ShoppingBasket },
+  { label: 'Pedidos', to: '/admin/orders', icon: Workflow },
+  { label: 'Suscripciones', to: '/admin/subscriptions', icon: Ticket },
+  { label: 'Pagos', to: '/admin/payments', icon: CreditCard },
+  { label: 'Ajustes', to: '/admin/settings', icon: Settings },
 ]
 
 const AdminSidebar = () => {
@@ -39,7 +39,7 @@ const AdminSidebar = () => {
                   : 'text-text-secondary hover:text-text hover:border-border'
               }`
             }
-            end={to === '/'}
+            end={to === '/admin'}
           >
             <Icon size={18} />
             <span>{label}</span>
