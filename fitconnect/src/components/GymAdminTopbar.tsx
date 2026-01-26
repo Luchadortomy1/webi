@@ -1,12 +1,8 @@
-import { Download, LogOut, Menu, Moon, Sun } from 'lucide-react'
+import { LogOut, Moon, Sun } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useThemeStore } from '../store/theme'
 
-type AdminTopbarProps = {
-  onMenuClick: () => void
-}
-
-const AdminTopbar = ({ onMenuClick }: AdminTopbarProps) => {
+const GymAdminTopbar = () => {
   const { theme, toggleTheme } = useThemeStore()
   const navigate = useNavigate()
 
@@ -17,20 +13,10 @@ const AdminTopbar = ({ onMenuClick }: AdminTopbarProps) => {
   return (
     <header className="sticky top-0 z-30 bg-surface/90 backdrop-blur border-b border-border">
       <div className="flex items-center justify-between gap-4 px-4 py-3 xl:px-6">
-        <div className="flex items-center gap-2">
-          <button
-            className="lg:hidden h-10 w-10 flex items-center justify-center rounded-xl border border-border bg-background"
-            aria-label="Abrir menú"
-            onClick={onMenuClick}
-          >
-            <Menu size={18} />
-          </button>
-
-          <button className="h-10 px-3 inline-flex items-center gap-2 rounded-xl bg-primary text-background text-sm font-semibold">
-            <Download size={16} /> Exportar CSV
-          </button>
+        <div className="flex items-center gap-3 text-sm text-text-secondary">
+          <span className="pill bg-primary/10 text-primary border-primary/30">Modo admin</span>
+          <span>Gestiona tu gimnasio y ventas</span>
         </div>
-
         <div className="flex items-center gap-2">
           <button
             onClick={handleLogout}
@@ -52,4 +38,4 @@ const AdminTopbar = ({ onMenuClick }: AdminTopbarProps) => {
   )
 }
 
-export default AdminTopbar
+export default GymAdminTopbar
