@@ -9,6 +9,7 @@ import AdminPayments from './pages/AdminPayments'
 import AdminPlans from './pages/AdminPlans'
 import AdminSubscriptions from './pages/AdminSubscriptions'
 import AdminSettings from './pages/AdminSettings'
+import AdminRegisterGym from './pages/AdminRegisterGym'
 import GymAdminGymPanel from './pages/GymAdminGymPanel'
 import GymAdminOrders from './pages/GymAdminOrders'
 import GymAdminOverview from './pages/GymAdminOverview'
@@ -30,6 +31,7 @@ const App = () => {
         <Route path="subscriptions" element={<AdminSubscriptions />} />
         <Route path="payments" element={<AdminPayments />} />
         <Route path="settings" element={<AdminSettings />} />
+        <Route path="register-gym" element={<AdminRegisterGym />} />
       </Route>
 
       <Route path="/admin" element={<GymAdminLayout />}>
