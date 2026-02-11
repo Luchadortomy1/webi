@@ -9,7 +9,6 @@ const AdminRegisterGym = () => {
   const [password, setPassword] = useState('')
   const [gym, setGym] = useState('')
   const [planName, setPlanName] = useState('FitConnect Pro')
-  const [planPrice, setPlanPrice] = useState('49.00')
   const [creating, setCreating] = useState(false)
   const [feedback, setFeedback] = useState('')
 
@@ -20,49 +19,67 @@ const AdminRegisterGym = () => {
 
     const role = 'gym_owner'
 
-    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          role,
-          gym,
-          name,
-          plan_name: planName,
-          plan_price: planPrice,
+    try {
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            role,
+            gym,
+            name,
+            plan_name: planName,
+          },
         },
-      },
-    })
+      })
 
-    setCreating(false)
+      if (signUpError) {
+        setFeedback(signUpError.message)
+        return
+      }
 
-    if (signUpError) {
-      setFeedback(signUpError.message)
-      return
-    }
+      const userId = signUpData.user?.id
+      if (!userId) {
+        setFeedback('No se pudo obtener el usuario creado.')
+        return
+      }
 
-    const userId = signUpData.user?.id
-    if (userId) {
+      const { data: gymInsert, error: gymError } = await supabase
+        .from('gyms')
+        .insert({ name: gym, description: '', address: '', phone: '', image: '' })
+        .select('id')
+        .single()
+
+      if (gymError) {
+        setFeedback(`Usuario creado pero gimnasio falló: ${gymError.message}`)
+        return
+      }
+
+      const gymId = gymInsert?.id
+
       const { error: profileError } = await supabase.from('profiles').upsert({
         id: userId,
         full_name: name,
         email,
         role,
+        gym_id: gymId,
+        gym: gymId ?? gym,
       })
 
       if (profileError) {
-        setFeedback(`Usuario creado pero perfil falló: ${profileError.message}`)
+        setFeedback(`Usuario y gym creados pero perfil falló: ${profileError.message}`)
         return
       }
-    }
 
-    setFeedback('Admin de gimnasio creado. Revisa el correo para confirmar acceso.')
-    setName('')
-    setEmail('')
-    setPassword('')
-    setGym('')
-    setPlanName('FitConnect Pro')
-    setPlanPrice('49.00')
+      setFeedback('Admin y gimnasio creados. Revisa el correo para confirmar acceso.')
+      setName('')
+      setEmail('')
+      setPassword('')
+      setGym('')
+      setPlanName('FitConnect Pro')
+    } finally {
+      setCreating(false)
+    }
   }
 
   return (
@@ -125,21 +142,6 @@ const AdminRegisterGym = () => {
               onChange={(event) => setPlanName(event.target.value)}
               required
               placeholder="FitConnect Pro"
-              className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm"
-            />
-          </label>
-
-          <label className="space-y-1 text-sm font-semibold text-text" htmlFor="plan-price">
-            Precio mensual (USD)
-            <input
-              id="plan-price"
-              type="number"
-              min="0"
-              step="0.01"
-              value={planPrice}
-              onChange={(event) => setPlanPrice(event.target.value)}
-              required
-              placeholder="49.00"
               className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm"
             />
           </label>

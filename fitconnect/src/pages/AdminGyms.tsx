@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { ChevronDown, ChevronUp, Mail, MapPin, Loader2, Building2 } from 'lucide-react'
+import { ChevronDown, ChevronUp, Mail, MapPin, Loader2, Building2, Power, Ban, Trash2 } from 'lucide-react'
 import Card from '../components/Card'
 import { supabase } from '../lib/supabase'
 
@@ -24,6 +24,7 @@ const AdminGyms = () => {
   const [open, setOpen] = useState<Record<string, boolean>>({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [actionLoading, setActionLoading] = useState<Record<string, string>>({})
 
   useEffect(() => {
     let active = true
@@ -52,6 +53,43 @@ const AdminGyms = () => {
     setOpen((prev) => ({ ...prev, [id]: !prev[id] }))
   }
 
+  const updateStatus = async (id: string, status: string) => {
+    setActionLoading((prev) => ({ ...prev, [id]: `status-${status}` }))
+    setError('')
+    const { error: err } = await supabase.from('gyms').update({ status }).eq('id', id)
+
+    if (err) {
+      setError(err.message)
+    } else {
+      setGyms((prev) => prev.map((gym) => (gym.id === id ? { ...gym, status } : gym)))
+    }
+
+    setActionLoading((prev) => {
+      const { [id]: _action, ...rest } = prev
+      return rest
+    })
+  }
+
+  const deleteGym = async (id: string) => {
+    const confirmed = window.confirm('¿Eliminar este gimnasio? Esta acción no se puede deshacer.')
+    if (!confirmed) return
+
+    setActionLoading((prev) => ({ ...prev, [id]: 'delete' }))
+    setError('')
+    const { error: err } = await supabase.from('gyms').delete().eq('id', id)
+
+    if (err) {
+      setError(err.message)
+    } else {
+      setGyms((prev) => prev.filter((gym) => gym.id !== id))
+    }
+
+    setActionLoading((prev) => {
+      const { [id]: _action, ...rest } = prev
+      return rest
+    })
+  }
+
   return (
     <div className="space-y-5">
       <div>
@@ -76,6 +114,9 @@ const AdminGyms = () => {
               const locations = gym.location_count ?? gym.locations ?? 0
               const priceValue = gym.price !== undefined ? gym.price : undefined
               const price = typeof priceValue === 'number' ? `$${priceValue.toFixed(2)}` : priceValue
+              const busy = Boolean(actionLoading[id])
+              const canManage = Boolean(gym.id)
+              const isActive = gym.status === 'Activo'
 
               return (
                 <div key={id} className="rounded-2xl border border-border bg-background p-4 space-y-3">
@@ -127,6 +168,23 @@ const AdminGyms = () => {
                       <div className="flex items-center justify-between">
                         <span className="text-text-secondary">Renovaciones</span>
                         <span className="font-semibold text-text">{gym.renewals ?? 'N/D'}</span>
+                      </div>
+                      <div className="flex flex-wrap gap-2 pt-2">
+                        <button
+                          onClick={() => canManage && updateStatus(id as string, isActive ? 'Suspendido' : 'Activo')}
+                          disabled={!canManage || busy}
+                          className="inline-flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-semibold text-text disabled:opacity-60"
+                        >
+                          {isActive ? <Ban size={14} /> : <Power size={14} />}
+                          {isActive ? 'Suspender' : 'Activar'}
+                        </button>
+                        <button
+                          onClick={() => canManage && deleteGym(id as string)}
+                          disabled={!canManage || busy}
+                          className="inline-flex items-center gap-2 rounded-lg border border-error/40 bg-error/10 px-3 py-1.5 text-xs font-semibold text-error disabled:opacity-60"
+                        >
+                          <Trash2 size={14} /> Eliminar
+                        </button>
                       </div>
                     </div>
                   )}

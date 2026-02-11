@@ -178,7 +178,9 @@ const Admin = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-text-secondary">Nuevos usuarios</p>
-                <p className="text-lg font-semibold">{loading ? 'Cargando…' : `${userSeries.data.reduce((acc, v) => acc + v, 0)} en ventana`}</p>
+                <p className="text-lg font-semibold">
+                  {loading ? 'Cargando…' : `${userSeries.data.reduce((acc, v) => acc + v, 0)} últimos 6 meses`}
+                </p>
               </div>
               <span className="pill bg-success/10 text-success border-success/20">Usuarios</span>
             </div>
@@ -203,7 +205,9 @@ const Admin = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-text-secondary">Nuevos gimnasios</p>
-                <p className="text-lg font-semibold">{loading ? 'Cargando…' : `${gymSeries.data.reduce((acc, v) => acc + v, 0)} en ventana`}</p>
+                <p className="text-lg font-semibold">
+                  {loading ? 'Cargando…' : `${gymSeries.data.reduce((acc, v) => acc + v, 0)} últimos 6 meses`}
+                </p>
               </div>
               <span className="pill bg-warning/10 text-warning border-warning/20">Gimnasios</span>
             </div>
