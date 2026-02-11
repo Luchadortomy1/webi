@@ -9,6 +9,7 @@ const AdminRegisterGym = () => {
   const [password, setPassword] = useState('')
   const [gym, setGym] = useState('')
   const [planName, setPlanName] = useState('FitConnect Pro')
+  const [planPrice, setPlanPrice] = useState('49.00')
   const [creating, setCreating] = useState(false)
   const [feedback, setFeedback] = useState('')
 
@@ -19,67 +20,68 @@ const AdminRegisterGym = () => {
 
     const role = 'gym_owner'
 
-    try {
-      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            role,
-            gym,
-            name,
-            plan_name: planName,
-          },
+    // Crea el registro del gimnasio primero para poder ligarlo en metadata
+    const { data: gymRow, error: gymError } = await supabase
+      .from('gyms')
+      .insert({ name: gym })
+      .select('id')
+      .single()
+
+    if (gymError || !gymRow?.id) {
+      setCreating(false)
+      setFeedback(gymError?.message || 'No se pudo crear el gimnasio')
+      return
+    }
+
+    const gymId = gymRow.id
+
+    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          role,
+          gym_name: gym,
+          gym_id: gymId,
+          name,
+          plan_name: planName,
+          plan_price: planPrice,
         },
-      })
+      },
+    })
 
-      if (signUpError) {
-        setFeedback(signUpError.message)
-        return
-      }
+    if (signUpError) {
+      // Intenta limpiar el gimnasio creado si el alta de usuario falla
+      await supabase.from('gyms').delete().eq('id', gymId)
+      setCreating(false)
+      setFeedback(signUpError.message)
+      return
+    }
 
-      const userId = signUpData.user?.id
-      if (!userId) {
-        setFeedback('No se pudo obtener el usuario creado.')
-        return
-      }
-
-      const { data: gymInsert, error: gymError } = await supabase
-        .from('gyms')
-        .insert({ name: gym, description: '', address: '', phone: '', image: '' })
-        .select('id')
-        .single()
-
-      if (gymError) {
-        setFeedback(`Usuario creado pero gimnasio falló: ${gymError.message}`)
-        return
-      }
-
-      const gymId = gymInsert?.id
-
+    const userId = signUpData.user?.id
+    if (userId) {
       const { error: profileError } = await supabase.from('profiles').upsert({
         id: userId,
         full_name: name,
         email,
         role,
-        gym_id: gymId,
-        gym: gymId ?? gym,
       })
 
       if (profileError) {
-        setFeedback(`Usuario y gym creados pero perfil falló: ${profileError.message}`)
+        setCreating(false)
+        setFeedback(`Usuario creado pero perfil falló: ${profileError.message}`)
         return
       }
-
-      setFeedback('Admin y gimnasio creados. Revisa el correo para confirmar acceso.')
-      setName('')
-      setEmail('')
-      setPassword('')
-      setGym('')
-      setPlanName('FitConnect Pro')
-    } finally {
-      setCreating(false)
     }
+
+    setCreating(false)
+    setFeedback('Admin de gimnasio creado con rol gym_owner. Revisa el correo para confirmar acceso.')
+    setName('')
+    setEmail('')
+    setPassword('')
+    setGym('')
+    setPlanName('FitConnect Pro')
+    setPlanPrice('49.00')
   }
 
   return (
@@ -142,6 +144,21 @@ const AdminRegisterGym = () => {
               onChange={(event) => setPlanName(event.target.value)}
               required
               placeholder="FitConnect Pro"
+              className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm"
+            />
+          </label>
+
+          <label className="space-y-1 text-sm font-semibold text-text" htmlFor="plan-price">
+            Precio mensual (USD)
+            <input
+              id="plan-price"
+              type="number"
+              min="0"
+              step="0.01"
+              value={planPrice}
+              onChange={(event) => setPlanPrice(event.target.value)}
+              required
+              placeholder="49.00"
               className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm"
             />
           </label>

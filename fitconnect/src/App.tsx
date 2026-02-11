@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import AdminLayout from './layouts/AdminLayout'
 import GymAdminLayout from './layouts/GymAdminLayout'
 import Login from './pages/Login'
+import Landing from './pages/Landing'
 import Admin from './pages/Admin'
 import AdminUsers from './pages/AdminUsers'
 import AdminGyms from './pages/AdminGyms'
@@ -21,7 +22,8 @@ import GymAdminUsers from './pages/GymAdminUsers'
 const App = () => {
   return (
     <Routes>
-      <Route path="/" element={<Login />} />
+      <Route path="/" element={<Landing />} />
+      <Route path="/login" element={<Login />} />
 
       <Route path="/superadmin" element={<AdminLayout />}>
         <Route index element={<Admin />} />

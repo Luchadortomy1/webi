@@ -157,6 +157,7 @@ const GymAdminOverview = () => {
             <button className="pill bg-primary/15 text-primary border-primary/30">Agregar miembro</button>
             <button className="pill bg-secondary/15 text-secondary border-secondary/30">Crear clase</button>
             <button className="pill bg-success/15 text-success border-success/30">Registrar pago</button>
+            <button className="pill bg-text-secondary/10 text-text border-border">Exportar CSV</button>
           </div>
         </Card>
         <Card title="Alertas" subtitle="Lo que necesita atención">

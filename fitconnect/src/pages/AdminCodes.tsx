@@ -16,6 +16,7 @@ const AdminCodes = () => {
       <Card subtitle="Alta, agotamiento y asociación usuario↔gimnasio según SRS">
         <div className="flex flex-wrap gap-3 text-sm mb-4">
           <button className="pill bg-primary/15 text-primary border-primary/30">Generar lote</button>
+          <button className="pill bg-secondary/15 text-secondary border-secondary/30">Exportar CSV</button>
         </div>
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
