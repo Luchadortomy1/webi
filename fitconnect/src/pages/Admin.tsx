@@ -94,16 +94,20 @@ const Admin = () => {
 
       try {
         const [usersCountRes, gymsCountRes, subsCountRes, usersSeriesRes, gymsSeriesRes] = await Promise.all([
-          supabase.from('profiles').select('id', { count: 'exact', head: true }),
+          supabase.from('profiles').select('id'),
           supabase.from('gyms').select('id', { count: 'exact', head: true }),
-          supabase.from('subscriptions').select('id', { count: 'exact', head: true }),
+          supabase.from('user_subscriptions').select('id', { count: 'exact', head: true }).eq('status', 'active'),
           supabase.from('profiles').select('created_at').gte('created_at', since.toISOString()),
           supabase.from('gyms').select('created_at').gte('created_at', since.toISOString()),
         ])
 
         if (!active) return
 
-        setUserCount(usersCountRes.count ?? 0)
+        console.log('Usuarios data:', usersCountRes.data)
+        console.log('Usuarios count:', usersCountRes.data?.length)
+        console.log('Usuarios error:', usersCountRes.error)
+        
+        setUserCount(usersCountRes.data?.length ?? 0)
         setGymCount(gymsCountRes.count ?? 0)
         setSubscriptionCount(subsCountRes.count ?? 0)
 

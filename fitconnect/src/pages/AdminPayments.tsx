@@ -6,6 +6,7 @@ import { supabase } from '../lib/supabase'
 type PaymentRow = {
   id?: string
   user_id?: string
+  user_name?: string
   user_email?: string
   total_amount?: number | string
   status?: string
@@ -43,28 +44,44 @@ const AdminPayments = () => {
           // Extract subscription data
           const userData = orderData as Array<Record<string, unknown>>
           
-          // Fetch all profiles
-          const { data: allProfiles } = await supabase
-            .from('profiles')
-            .select('id, email, full_name')
+          // Extract unique user IDs
+          const userIds = [...new Set(userData.map((order) => order.user_id as string))]
           
-          // Create a map for quick lookup
-          const profileMap = new Map<string, Record<string, unknown>>()
-          if (allProfiles && Array.isArray(allProfiles)) {
-            allProfiles.forEach((profile: Record<string, unknown>) => {
-              profileMap.set(profile.id as string, profile)
+          // Get user emails from auth.users using RPC function
+          const { data: userEmails } = await supabase
+            .rpc('get_user_emails', { user_ids: userIds })
+          
+          // Create email map
+          const emailMap = new Map<string, string>()
+          if (userEmails && Array.isArray(userEmails)) {
+            userEmails.forEach((user: Record<string, unknown>) => {
+              emailMap.set(user.id as string, (user.email as string) || '')
+            })
+          }
+          
+          // Get user names from profiles using RPC function
+          const { data: userNames } = await supabase
+            .rpc('get_user_names', { user_ids: userIds })
+          
+          // Create name map
+          const nameMap = new Map<string, string>()
+          if (userNames && Array.isArray(userNames)) {
+            userNames.forEach((user: Record<string, unknown>) => {
+              nameMap.set(user.id as string, (user.name as string) || '')
             })
           }
           
           // Process all orders
           processedData = userData.map((order) => {
             const userId = order.user_id as string
-            const userProfile = profileMap.get(userId)
+            const userEmail = emailMap.get(userId)
+            const userName = nameMap.get(userId)
             
             return {
               id: order.id as string | undefined,
               user_id: userId,
-              user_email: (userProfile?.email as string) || userId,
+              user_name: userName || 'Sin usuario',
+              user_email: userEmail || 'Sin correo',
               total_amount: order.total_amount as number | string | undefined,
               status: order.status as string | undefined,
               stripe_payment_intent_id: (order.stripe_payment_intent_id as string) || undefined,
@@ -152,9 +169,9 @@ const AdminPayments = () => {
           </thead>
           <tbody className="divide-y divide-border">
             {payments.map((p) => (
-              <tr key={p.id ?? `${p.user_email}-${p.created_at}`}>
+              <tr key={p.id ?? `${p.user_name}-${p.created_at}`}>
                 <td className="py-3 font-semibold text-text">{p.id ? p.id.substring(0, 8) : '—'}</td>
-                <td className="py-3">{p.user_email ?? 'Sin usuario'}</td>
+                <td className="py-3">{p.user_name ?? 'Sin usuario'}</td>
                 <td className="py-3">{formatAmount(p.total_amount)}</td>
                 <td className="py-3">
                   <span className={`pill text-xs ${getStatusBadgeColor(p.status)}`}>

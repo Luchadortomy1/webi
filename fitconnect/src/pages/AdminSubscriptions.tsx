@@ -68,23 +68,38 @@ const AdminSubscriptions = () => {
           // Extract subscription data
           const userData = subscriptionData as Array<Record<string, unknown>>
           
-          // Fetch all profiles - simpler approach
-          const { data: allProfiles } = await supabase
-            .from('profiles')
-            .select('id, email, full_name')
+          // Extract unique user IDs
+          const userIds = [...new Set(userData.map((sub) => sub.user_id as string))]
           
-          // Create a map for quick lookup
-          const profileMap = new Map<string, Record<string, unknown>>()
-          if (allProfiles && Array.isArray(allProfiles)) {
-            allProfiles.forEach((profile: Record<string, unknown>) => {
-              profileMap.set(profile.id as string, profile)
+          // Get user emails from auth.users using RPC function
+          const { data: userEmails } = await supabase
+            .rpc('get_user_emails', { user_ids: userIds })
+          
+          // Create email map
+          const emailMap = new Map<string, string>()
+          if (userEmails && Array.isArray(userEmails)) {
+            userEmails.forEach((user: Record<string, unknown>) => {
+              emailMap.set(user.id as string, (user.email as string) || '')
+            })
+          }
+          
+          // Get user names from profiles using RPC function
+          const { data: userNames } = await supabase
+            .rpc('get_user_names', { user_ids: userIds })
+          
+          // Create name map
+          const nameMap = new Map<string, string>()
+          if (userNames && Array.isArray(userNames)) {
+            userNames.forEach((user: Record<string, unknown>) => {
+              nameMap.set(user.id as string, (user.name as string) || '')
             })
           }
           
           // Process all subscriptions
           processedData = userData.map((sub) => {
             const userId = sub.user_id as string
-            const userProfile = profileMap.get(userId)
+            const userEmail = emailMap.get(userId)
+            const userName = nameMap.get(userId)
             
             const planData = sub.subscription_plans as Array<Record<string, unknown>> | Record<string, unknown> | undefined
             let plan: Record<string, unknown> | undefined
@@ -94,7 +109,6 @@ const AdminSubscriptions = () => {
             } else if (!Array.isArray(planData) && planData) {
               plan = planData
             }
-            
             const gymsData = plan?.gyms as Array<Record<string, unknown>> | Record<string, unknown> | undefined
             let gym: Record<string, unknown> | undefined
             
@@ -103,13 +117,12 @@ const AdminSubscriptions = () => {
             } else if (!Array.isArray(gymsData) && gymsData) {
               gym = gymsData
             }
-            
             return {
               id: sub.id as string | undefined,
               user_id: userId,
               plan_id: sub.plan_id as string | undefined,
-              user_email: (userProfile?.email as string) || 'Sin correo',
-              user_name: (userProfile?.full_name as string) || 'Desconocido',
+              user_email: userEmail || 'Sin correo',
+              user_name: userName || 'Sin usuario',
               gym_name: (gym?.name as string) || 'Sin gimnasio',
               plan_name: (plan?.name as string) || 'Sin plan',
               status: sub.status as string | undefined,
