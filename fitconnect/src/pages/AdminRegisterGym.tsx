@@ -1,180 +1,165 @@
 import { FormEvent, useState } from 'react'
-import { KeyRound, ShieldCheck } from 'lucide-react'
+import { Building2, Loader2 } from 'lucide-react'
 import Card from '../components/Card'
 import { supabase } from '../lib/supabase'
 
 const AdminRegisterGym = () => {
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [gym, setGym] = useState('')
-  const [planName, setPlanName] = useState('FitConnect Pro')
-  const [planPrice, setPlanPrice] = useState('49.00')
+  const [formData, setFormData] = useState({
+    name: '',
+    address: '',
+    phone: '',
+    location: '',
+    image_url: '',
+    is_active: true,
+  })
   const [creating, setCreating] = useState(false)
   const [feedback, setFeedback] = useState('')
+  const [feedbackType, setFeedbackType] = useState<'success' | 'error' | ''>('')
 
-  const handleCreateGymAdmin = async (event: FormEvent<HTMLFormElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value, type } = e.currentTarget
+    setFormData({
+      ...formData,
+      [name]: type === 'checkbox' ? (e.currentTarget as HTMLInputElement).checked : value,
+    })
+  }
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setFeedback('')
     setCreating(true)
 
-    const role = 'gym_owner'
-
-    // Crea el registro del gimnasio primero para poder ligarlo en metadata
-    const { data: gymRow, error: gymError } = await supabase
-      .from('gyms')
-      .insert({ name: gym })
-      .select('id')
-      .single()
-
-    if (gymError || !gymRow?.id) {
+    // Validar campos requeridos
+    if (!formData.name.trim() || !formData.address.trim() || !formData.phone.trim()) {
+      setFeedback('Por favor completa todos los campos requeridos')
+      setFeedbackType('error')
       setCreating(false)
-      setFeedback(gymError?.message || 'No se pudo crear el gimnasio')
       return
     }
 
-    const gymId = gymRow.id
-
-    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          role,
-          gym_name: gym,
-          gym_id: gymId,
-          name,
-          plan_name: planName,
-          plan_price: planPrice,
-        },
-      },
-    })
-
-    if (signUpError) {
-      // Intenta limpiar el gimnasio creado si el alta de usuario falla
-      await supabase.from('gyms').delete().eq('id', gymId)
-      setCreating(false)
-      setFeedback(signUpError.message)
-      return
-    }
-
-    const userId = signUpData.user?.id
-    if (userId) {
-      const { error: profileError } = await supabase.from('profiles').upsert({
-        id: userId,
-        full_name: name,
-        email,
-        role,
+    try {
+      const { error } = await supabase.from('gyms').insert({
+        name: formData.name.trim(),
+        address: formData.address.trim(),
+        phone: formData.phone.trim(),
+        location: formData.location.trim() || null,
+        image_url: formData.image_url.trim() || null,
+        is_active: formData.is_active,
       })
 
-      if (profileError) {
-        setCreating(false)
-        setFeedback(`Usuario creado pero perfil falló: ${profileError.message}`)
-        return
+      if (error) {
+        setFeedback(`Error: ${error.message}`)
+        setFeedbackType('error')
+      } else {
+        setFeedback('✓ Gimnasio registrado exitosamente')
+        setFeedbackType('success')
+        setFormData({
+          name: '',
+          address: '',
+          phone: '',
+          location: '',
+          image_url: '',
+          is_active: true,
+        })
       }
+    } catch (error) {
+      setFeedback(error instanceof Error ? error.message : 'Error desconocido')
+      setFeedbackType('error')
+    } finally {
+      setCreating(false)
     }
-
-    setCreating(false)
-    setFeedback('Admin de gimnasio creado con rol gym_owner. Revisa el correo para confirmar acceso.')
-    setName('')
-    setEmail('')
-    setPassword('')
-    setGym('')
-    setPlanName('FitConnect Pro')
-    setPlanPrice('49.00')
   }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm text-text-secondary">Registro de gimnasio</p>
-          <h1 className="text-2xl font-bold">Crear admin y plan</h1>
-          <p className="text-sm text-text-secondary mt-1">Un solo paso para crear el admin y asociar el plan contratado.</p>
+          <p className="text-sm text-text-secondary">Registro de gimnasios</p>
+          <h1 className="text-2xl font-bold">Registrar nuevo gimnasio</h1>
+          <p className="text-sm text-text-secondary mt-1">Completa los datos del gimnasio para agregarlo a la plataforma.</p>
         </div>
-        <span className="pill bg-success/15 text-success border-success/30 inline-flex items-center gap-2">
-          <ShieldCheck size={16} /> Operación segura
+        <span className="pill bg-primary/15 text-primary border-primary/30 inline-flex items-center gap-2">
+          <Building2 size={16} /> Nuevo gimnasio
         </span>
       </div>
 
-      <Card title="Datos del gimnasio" subtitle="Crea usuarios con rol de administración de sede">
-        <form className="grid gap-3 md:grid-cols-2" onSubmit={handleCreateGymAdmin}>
-          <label className="space-y-1 text-sm font-semibold text-text" htmlFor="gym-name">
-            Gimnasio
+      <Card title="Información del gimnasio" subtitle="Todos los campos marcados con * son obligatorios">
+        <form className="grid gap-4 md:grid-cols-2" onSubmit={handleSubmit}>
+          <label className="space-y-1 text-sm font-semibold text-text md:col-span-2" htmlFor="name">
+            Nombre del gimnasio *
             <input
-              id="gym-name"
-              value={gym}
-              onChange={(event) => setGym(event.target.value)}
+              id="name"
+              name="name"
+              value={formData.name}
+              onChange={handleInputChange}
               required
-              placeholder="Powerhouse Downtown"
+              placeholder="ej: Powerhouse Downtown"
               className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm"
             />
           </label>
 
-          <label className="space-y-1 text-sm font-semibold text-text" htmlFor="admin-name">
-            Nombre completo
+          <label className="space-y-1 text-sm font-semibold text-text" htmlFor="address">
+            Dirección *
             <input
-              id="admin-name"
-              value={name}
-              onChange={(event) => setName(event.target.value)}
+              id="address"
+              name="address"
+              value={formData.address}
+              onChange={handleInputChange}
               required
-              placeholder="Ana Operaciones"
+              placeholder="ej: Calle Principal 123"
               className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm"
             />
           </label>
 
-          <label className="space-y-1 text-sm font-semibold text-text" htmlFor="admin-email">
-            Correo
+          <label className="space-y-1 text-sm font-semibold text-text" htmlFor="phone">
+            Teléfono *
             <input
-              id="admin-email"
-              type="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
+              id="phone"
+              name="phone"
+              value={formData.phone}
+              onChange={handleInputChange}
               required
-              placeholder="admin@gym.com"
+              type="tel"
+              placeholder="ej: +52 555 1234567"
               className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm"
             />
           </label>
 
-          <label className="space-y-1 text-sm font-semibold text-text" htmlFor="plan-name">
-            Plan vendido (SaaS)
+          <label className="space-y-1 text-sm font-semibold text-text" htmlFor="image_url">
+            URL de imagen
             <input
-              id="plan-name"
-              value={planName}
-              onChange={(event) => setPlanName(event.target.value)}
-              required
-              placeholder="FitConnect Pro"
+              id="image_url"
+              name="image_url"
+              value={formData.image_url}
+              onChange={handleInputChange}
+              type="url"
+              placeholder="ej: https://ejemplo.com/imagen.jpg"
               className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm"
             />
           </label>
 
-          <label className="space-y-1 text-sm font-semibold text-text" htmlFor="plan-price">
-            Precio mensual (USD)
-            <input
-              id="plan-price"
-              type="number"
-              min="0"
-              step="0.01"
-              value={planPrice}
-              onChange={(event) => setPlanPrice(event.target.value)}
-              required
-              placeholder="49.00"
-              className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm"
+          <label className="space-y-1 text-sm font-semibold text-text md:col-span-2" htmlFor="location">
+            Descripción/Ubicación
+            <textarea
+              id="location"
+              name="location"
+              value={formData.location}
+              onChange={handleInputChange}
+              placeholder="ej: Ubicado en el centro comercial, 3 pisos"
+              rows={3}
+              className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm resize-none"
             />
           </label>
 
-          <label className="space-y-1 text-sm font-semibold text-text" htmlFor="admin-password">
-            Contraseña temporal
+          <label className="space-y-1 text-sm font-semibold text-text flex items-center gap-2 md:col-span-2">
             <input
-              id="admin-password"
-              type="password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              required
-              minLength={8}
-              placeholder="••••••••"
-              className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm"
+              type="checkbox"
+              name="is_active"
+              checked={formData.is_active}
+              onChange={handleInputChange}
+              className="w-4 h-4 rounded border-border"
             />
+            Gimnasio activo
           </label>
 
           <div className="md:col-span-2 flex items-center gap-3">
@@ -183,10 +168,27 @@ const AdminRegisterGym = () => {
               disabled={creating}
               className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-background disabled:opacity-60 inline-flex items-center gap-2"
             >
-              <KeyRound size={16} />
-              {creating ? 'Creando…' : 'Crear admin'}
+              {creating ? (
+                <>
+                  <Loader2 size={16} className="animate-spin" />
+                  Registrando…
+                </>
+              ) : (
+                <>
+                  <Building2 size={16} />
+                  Registrar gimnasio
+                </>
+              )}
             </button>
-            {feedback && <p className="text-sm text-text-secondary">{feedback}</p>}
+            {feedback && (
+              <p
+                className={`text-sm ${
+                  feedbackType === 'success' ? 'text-success' : feedbackType === 'error' ? 'text-error' : 'text-text-secondary'
+                }`}
+              >
+                {feedback}
+              </p>
+            )}
           </div>
         </form>
       </Card>
