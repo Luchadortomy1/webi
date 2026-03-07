@@ -111,7 +111,7 @@ const GymAdminOverview = () => {
 
         // Filtrar solo las suscripciones del gimnasio actual
         const gymSubs = (subsData ?? []).filter((sub) => {
-          const planData = sub.subscription_plans as Record<string, unknown> | null
+          const planData = sub.subscription_plans as unknown as Record<string, unknown> | null
           console.log('Checking sub:', sub.id, 'plan gym_id:', planData?.gym_id, 'current gym:', currentGymId)
           return planData?.gym_id === currentGymId
         })
@@ -157,7 +157,7 @@ const GymAdminOverview = () => {
         console.log('Filtered Orders:', filteredOrders)
 
         const activeMembersRes = gymSubs.filter((sub) => sub.created_at !== null)
-        const activePlansRes = (plansData ?? []).map((plan) => ({ created_at: null }))
+        const activePlansRes = (plansData ?? []).map((_plan) => ({ created_at: null }))
         const totalSales = (filteredOrders ?? []).reduce((sum, order) => sum + (order.total_amount ?? 0), 0)
         const salesRes = rollupByMonthSum(filteredOrders ?? [])
 

@@ -1,7 +1,10 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
+import { useEffect } from 'react'
 import AdminLayout from './layouts/AdminLayout'
 import GymAdminLayout from './layouts/GymAdminLayout'
 import ProtectedRoute from './components/ProtectedRoute'
+import UpdatePrompt from './components/UpdatePrompt'
+import { ServiceWorkerManager } from './lib/service-worker-register'
 import Login from './pages/Login'
 import Landing from './pages/Landing'
 import Admin from './pages/Admin'
@@ -21,28 +24,34 @@ import GymAdminSubscriptions from './pages/GymAdminSubscriptions'
 import GymAdminUsers from './pages/GymAdminUsers'
 
 const App = () => {
-  return (
-    <Routes>
-      <Route path="/" element={<Landing />} />
-      <Route path="/login" element={<Login />} />
+  useEffect(() => {
+    // Registrar Service Worker
+    ServiceWorkerManager.register()
+  }, [])
 
-      <Route
-        path="/superadmin"
-        element={
-          <ProtectedRoute requiredRole="superadmin">
-            <AdminLayout />
-          </ProtectedRoute>
-        }
-      >
-        <Route index element={<Admin />} />
-        <Route path="users" element={<AdminUsers />} />
-        <Route path="gyms" element={<AdminGyms />} />
-        <Route path="plans" element={<AdminPlans />} />
-        <Route path="subscriptions" element={<AdminSubscriptions />} />
-        <Route path="payments" element={<AdminPayments />} />
-        <Route path="settings" element={<AdminSettings />} />
-        <Route path="register-gym" element={<AdminRegisterGym />} />
-      </Route>
+  return (
+    <>
+      <Routes>
+        <Route path="/" element={<Landing />} />
+        <Route path="/login" element={<Login />} />
+
+        <Route
+          path="/superadmin"
+          element={
+            <ProtectedRoute requiredRole="superadmin">
+              <AdminLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Admin />} />
+          <Route path="users" element={<AdminUsers />} />
+          <Route path="gyms" element={<AdminGyms />} />
+          <Route path="plans" element={<AdminPlans />} />
+          <Route path="subscriptions" element={<AdminSubscriptions />} />
+          <Route path="payments" element={<AdminPayments />} />
+          <Route path="settings" element={<AdminSettings />} />
+          <Route path="register-gym" element={<AdminRegisterGym />} />
+        </Route>
 
       <Route
         path="/admin"
@@ -63,6 +72,10 @@ const App = () => {
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+
+    {/* PWA Update Prompt */}
+    <UpdatePrompt />
+    </>
   )
 }
 

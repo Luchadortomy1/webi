@@ -86,7 +86,7 @@ const GymAdminPayments = () => {
       const now = new Date()
       const thirtyDaysAgo = new Date(now.getTime() - (30 * 24 * 60 * 60 * 1000))
       
-      const recentPayments = enriched.filter(p => new Date(p.created_at) >= thirtyDaysAgo)
+      const recentPayments = enriched.filter(p => p.created_at && new Date(p.created_at) >= thirtyDaysAgo)
       const totalIncome = recentPayments.reduce((sum, p) => {
         const val = typeof p.total_amount === 'number' ? p.total_amount : Number(p.total_amount)
         return sum + (isNaN(val) ? 0 : val)

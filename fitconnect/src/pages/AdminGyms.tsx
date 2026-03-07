@@ -132,8 +132,6 @@ const AdminGyms = () => {
               const id = gym.id ?? gym.name ?? Math.random().toString()
               const expanded = open[id]
               const locations = gym.location_count ?? gym.locations ?? 0
-              const priceValue = gym.price !== undefined ? gym.price : undefined
-              const price = typeof priceValue === 'number' ? `$${priceValue.toFixed(2)}` : priceValue
 
               return (
                 <div key={id} className="rounded-2xl border border-border bg-background p-4 space-y-3">

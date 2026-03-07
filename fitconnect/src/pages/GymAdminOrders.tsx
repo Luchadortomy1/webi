@@ -131,23 +131,43 @@ const GymAdminOrders = () => {
     return typeof val === 'number' ? val : Number(val)
   }
 
-  const handleExportCSV = () => {
-    console.log('Exporting orders...', orders.length)
-    alert('Exportando ' + orders.length + ' órdenes')
-    const csvData: CSVRow[] = orders.map((order) => ({
-      ID: order.id || '',
-      Cliente: order.user_name || 'Sin nombre',
-      Email: order.user_email || 'Sin email',
-      Monto: typeof order.total_amount === 'number' ? order.total_amount.toFixed(2) : order.total_amount,
-      'Estado de Pago': order.status === 'paid' ? 'Pagado' : order.status === 'pending' ? 'Pendiente' : order.status,
-      'Estado Entrega': order.delivery_status === 'delivered' ? 'Entregado' : 'Pendiente',
-      Fecha: order.created_at ? formatDateForCSV(order.created_at) : '',
-      'Fecha Entrega': order.delivery_date ? formatDateForCSV(order.delivery_date) : ''
-    }))
+  const handleExportCSV = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault()
+    e.stopPropagation()
+    
+    console.log('🔵 handleExportCSV called')
+    console.log('📊 Total orders:', orders.length)
+    
+    if (orders.length === 0) {
+      console.warn('⚠️ No orders to export')
+      alert('No hay órdenes para exportar')
+      return
+    }
 
-    const now = new Date()
-    const filename = `ordenes-${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}.csv`
-    exportToCSV(csvData, filename)
+    try {
+      const csvData: CSVRow[] = orders.map((order) => ({
+        ID: order.id || '',
+        Cliente: order.user_name || 'Sin nombre',
+        Email: order.user_email || 'Sin email',
+        Monto: typeof order.total_amount === 'number' ? order.total_amount.toFixed(2) : order.total_amount,
+        'Estado de Pago': order.status === 'paid' ? 'Pagado' : order.status === 'pending' ? 'Pendiente' : order.status,
+        'Estado Entrega': order.delivery_status === 'delivered' ? 'Entregado' : 'Pendiente',
+        Fecha: order.created_at ? formatDateForCSV(order.created_at) : '',
+        'Fecha Entrega': order.delivery_date ? formatDateForCSV(order.delivery_date) : ''
+      }))
+
+      console.log('✅ CSV data prepared:', csvData.length, 'rows')
+
+      const now = new Date()
+      const filename = `ordenes-${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}.csv`
+      
+      console.log('📥 Starting export to file:', filename)
+      exportToCSV(csvData, filename)
+      console.log('✨ Export completed')
+    } catch (error) {
+      console.error('❌ Export error:', error)
+      alert('Error al exportar: ' + (error instanceof Error ? error.message : 'Error desconocido'))
+    }
   }
 
   const handleMarkAsDelivered = async (orderId: string) => {

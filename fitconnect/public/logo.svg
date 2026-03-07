@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Fondo -->
+  <rect width="512" height="512" fill="#6366f1"/>
+  
+  <!-- Círculo interior blanco -->
+  <circle cx="256" cy="256" r="200" fill="#ffffff"/>
+  
+  <!-- Dumbbell (mancuerna) -->
+  <g transform="translate(256, 256)">
+    <!-- Barra central -->
+    <rect x="-100" y="-12" width="200" height="24" fill="#6366f1" rx="4"/>
+    
+    <!-- Disco izquierdo -->
+    <circle cx="-130" cy="0" r="35" fill="#10b981"/>
+    <circle cx="-130" cy="0" r="28" fill="#ffffff" opacity="0.2"/>
+    
+    <!-- Disco derecho -->
+    <circle cx="130" cy="0" r="35" fill="#f59e0b"/>
+    <circle cx="130" cy="0" r="28" fill="#ffffff" opacity="0.2"/>
+    
+    <!-- Líneas decorativas -->
+    <line x1="-160" y1="-30" x2="-160" y2="30" stroke="#6366f1" stroke-width="4" stroke-linecap="round"/>
+    <line x1="160" y1="-30" x2="160" y2="30" stroke="#6366f1" stroke-width="4" stroke-linecap="round"/>
+  </g>
+  
+  <!-- Texto decorativo -->
+  <text x="256" y="380" font-size="28" font-weight="bold" fill="#6366f1" text-anchor="middle" font-family="Arial, sans-serif">FitConnect</text>
+</svg>

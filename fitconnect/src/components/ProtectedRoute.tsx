@@ -49,7 +49,7 @@ const ProtectedRoute = ({ children, requiredRole }: ProtectedRouteProps) => {
         }
 
         if (mounted) {
-          const hasRequiredRole = admin && admin.role === requiredRole
+          const hasRequiredRole = !!(admin && admin.role === requiredRole)
           setIsAuthorized(hasRequiredRole)
           setIsLoading(false)
         }

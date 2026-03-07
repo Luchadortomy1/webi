@@ -64,9 +64,9 @@ const GymAdminUsers = () => {
 
         // Filtrar solo las suscripciones del gimnasio actual
         const gymSubs = (subsData ?? []).filter((sub) => {
-          const planData = sub.subscription_plans as Record<string, unknown> | null
+          const planData = sub.subscription_plans as unknown as Record<string, unknown> | null
           return planData?.gym_id === currentGymId
-        }) as UserSubscription[]
+        }) as unknown as UserSubscription[]
 
         // Obtener emails y nombres de los usuarios
         const userIds = gymSubs.map(sub => sub.user_id)
@@ -91,7 +91,7 @@ const GymAdminUsers = () => {
           id: sub.user_id,
           email: emails[sub.user_id] ?? 'Desconocido',
           full_name: names[sub.user_id] ?? 'Sin nombre',
-          plan_name: (sub.subscription_plans as Record<string, unknown>)?.name ?? 'N/D',
+          plan_name: String((sub.subscription_plans as unknown as Record<string, unknown>)?.name ?? 'N/D'),
           created_at: sub.created_at
         }))
 
